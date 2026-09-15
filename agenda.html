@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StudyPom – Günlük Ajanda</title>
+  <meta name="description"
+    content="Günlük ders planınızı oluşturun, sınav türlerine göre derslerinizi planlayın ve tamamlanmayanları otomatik olarak erteleyin." />
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="css/agenda.css" />
+</head>
+
+<body>
+
+  <!-- ===== LOADING ===== -->
+  <div id="ag-loading" class="ag-loading">
+    <div class="ag-spinner"></div>
+    <p>Yükleniyor…</p>
+  </div>
+
+  <!-- ===== AUTH GATE ===== -->
+  <div id="ag-auth-gate" class="ag-auth-gate hidden">
+    <div class="ag-auth-box">
+      <div style="font-size:40px;margin-bottom:12px">📅</div>
+      <h2>Günlük Ajanda</h2>
+      <p>Bu sayfayı görüntülemek için giriş yapmanız gerekiyor.</p>
+      <a href="app.html" class="ag-add-btn"
+        style="text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;">
+        🔑 Giriş Yap
+      </a>
+    </div>
+  </div>
+
+  <!-- ===== MAIN LAYOUT ===== -->
+  <div id="ag-layout" class="agenda-layout hidden">
+
+    <!-- Sidebar -->
+    <aside class="ag-sidebar">
+      <div class="ag-brand">
+        <svg viewBox="0 0 40 40" fill="none">
+          <circle cx="20" cy="20" r="18" stroke="currentColor" stroke-width="2" />
+          <path d="M20 10 L20 20 L28 20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+          <circle cx="20" cy="20" r="2.5" fill="currentColor" />
+        </svg>
+        StudyPom
+      </div>
+
+      <nav class="ag-nav">
+        <a href="app.html" class="ag-nav-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>
+          Ana Sayfa
+        </a>
+        <a href="app.html#timer" class="ag-nav-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+          Zamanlayıcı
+        </a>
+        <button class="ag-nav-btn active" onclick="goToToday()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg>
+          Günlük Ajanda
+        </button>
+        <a href="app.html#analytics" class="ag-nav-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10" />
+            <line x1="12" y1="20" x2="12" y2="4" />
+            <line x1="6" y1="20" x2="6" y2="14" />
+          </svg>
+          Analizler
+        </a>
+      </nav>
+
+      <div class="ag-sidebar-footer">
+        <div class="ag-user-info">
+          <span class="ag-user-name" id="ag-user-name">Kullanıcı</span>
+          <span class="ag-user-email" id="ag-user-email"></span>
+        </div>
+        <button class="ag-logout-btn" onclick="fbLogout().then(()=>location.href='app.html')" title="Çıkış Yap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="ag-main">
+
+      <!-- Page Header -->
+      <div class="ag-page-header">
+        <div>
+          <h1>📅 Günlük Ajanda</h1>
+          <p>Çalışma planını oluştur, tamamla ve takip et</p>
+        </div>
+        <div class="ag-date-nav">
+          <button onclick="changeAgendaDate(-1)" title="Önceki gün">‹</button>
+          <span id="ag-date-label">Bugün</span>
+          <button onclick="changeAgendaDate(1)" title="Sonraki gün">›</button>
+          <button onclick="goToToday()" title="Bugüne git"
+            style="font-size:13px;padding:4px 10px;background:var(--gold-10);color:var(--gold);border-radius:6px;">Bugün</button>
+        </div>
+      </div>
+
+      <!-- Summary Row -->
+      <div class="ag-summary-row">
+        <div class="ag-summary-card">
+          <span class="ag-sc-label">Toplam Görev</span>
+          <span class="ag-sc-val" id="ag-stat-total">0</span>
+          <span class="ag-sc-sub">ders planı</span>
+        </div>
+        <div class="ag-summary-card">
+          <span class="ag-sc-label">Tamamlanan</span>
+          <span class="ag-sc-val green" id="ag-stat-done">0</span>
+          <span class="ag-sc-sub">görev ✓</span>
+        </div>
+        <div class="ag-summary-card">
+          <span class="ag-sc-label">Bekleyen</span>
+          <span class="ag-sc-val red" id="ag-stat-pending">0</span>
+          <span class="ag-sc-sub">görev</span>
+        </div>
+        <div class="ag-summary-card">
+          <span class="ag-sc-label">Toplam Süre</span>
+          <span class="ag-sc-val gold" id="ag-stat-min">0 dk</span>
+          <span class="ag-sc-sub">planlandı</span>
+        </div>
+        <div class="ag-summary-card">
+          <span class="ag-sc-label">Tamamlanma</span>
+          <span class="ag-sc-val" id="ag-stat-pct">0%</span>
+          <div class="ag-progress-bar-wrap">
+            <div class="ag-progress-bar-fill" id="ag-progress-fill" style="width:0%"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Two Columns -->
+      <div class="ag-columns">
+
+        <!-- Left: Task List -->
+        <div>
+          <div class="ag-section-header">
+            <div class="ag-section-title">
+              📋 Görev Listesi
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div id="ag-empty-state" class="ag-empty">
+            <div class="ag-empty-icon">📭</div>
+            <p>Bu gün için henüz görev eklenmedi.<br>Sağ panelden ders ekle!</p>
+          </div>
+
+          <!-- Normal Tasks -->
+          <div class="ag-task-list" id="ag-task-list"></div>
+
+          <!-- Carried Tasks -->
+          <div id="ag-carried-section" class="ag-carried-section hidden">
+            <div class="ag-carried-label">
+              ⬅ Önceki günden aktarılanlar
+            </div>
+            <div class="ag-task-list" id="ag-carried-list"></div>
+          </div>
+        </div>
+
+        <!-- Right: Add Task -->
+        <div>
+          <div class="ag-add-panel">
+            <h3>➕ Görev Ekle</h3>
+
+            <div class="ag-field">
+              <label>Sınav Türü</label>
+              <select class="ag-select" id="ag-sel-exam">
+                <option value="">-- Sınav Türü --</option>
+              </select>
+            </div>
+
+            <div class="ag-field">
+              <label>Ders</label>
+              <select class="ag-select" id="ag-sel-subject">
+                <option value="">-- Önce sınav türü seç --</option>
+              </select>
+            </div>
+
+            <div class="ag-field">
+              <label>Çalışma Süresi (dakika)</label>
+              <input type="number" class="ag-input" id="ag-inp-duration" min="5" max="480" value="30"
+                placeholder="Örn: 60" />
+              <div class="ag-duration-presets">
+                <button class="ag-preset-btn" onclick="setDurationPreset(15)">15 dk</button>
+                <button class="ag-preset-btn" onclick="setDurationPreset(30)">30 dk</button>
+                <button class="ag-preset-btn" onclick="setDurationPreset(45)">45 dk</button>
+                <button class="ag-preset-btn" onclick="setDurationPreset(60)">60 dk</button>
+              </div>
+            </div>
+
+            <button class="ag-add-btn" onclick="addAgendaTask()">
+              ➕ Görevi Ekle
+            </button>
+
+            <div class="ag-carry-note">
+              ⚡ Gün bitmeden tamamlanmayan görevler, yarının planına otomatik olarak aktarılır.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast -->
+  <div id="ag-toast" class="ag-toast"></div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+  <!-- StudyPom -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/firebase.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/agenda-firebase.js"></script>
+  <script src="js/agenda.js"></script>
+</body>
+
+</html>

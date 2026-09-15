@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StudyPom – Admin Paneli</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+
+  <!-- Loading Screen -->
+  <div id="admin-loading" class="admin-loading">
+    <div class="al-spinner"></div>
+    <p>Yükleniyor…</p>
+  </div>
+
+  <!-- Auth Gate -->
+  <div id="admin-auth-gate" class="admin-auth-gate hidden">
+    <div class="aag-box">
+      <div class="aag-logo">⚙️ StudyPom Admin</div>
+      <h2>Admin Giriş</h2>
+      <p>Admin paneline erişmek için giriş yapın.</p>
+
+      <!-- First-time setup -->
+      <div id="setup-banner" class="setup-banner hidden">
+        <strong>🛠️ İlk Kurulum</strong>
+        <p>Henüz admin yok. Giriş yaptıktan sonra "Admin Olarak Kayıt" butonunu göreceksiniz.</p>
+      </div>
+
+      <div class="aag-form" id="aag-form">
+        <input type="email" id="aag-email" placeholder="E-posta" />
+        <input type="password" id="aag-password" placeholder="Şifre" />
+        <button class="btn-aag" onclick="adminLogin()">
+          <span id="aag-btn-text">Giriş Yap</span>
+          <div class="aag-loader hidden" id="aag-loader"></div>
+        </button>
+        <p id="aag-error" class="aag-error hidden"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- First-time Admin Setup -->
+  <div id="admin-first-setup" class="modal-overlay hidden">
+    <div class="modal-box">
+      <h3>🛠️ Admin Kurulumu</h3>
+      <p>Sistemde henüz admin yok. Şu an giriş yaptığınız hesabı admin olarak kayıt etmek ister misiniz?</p>
+      <div class="modal-uid-info" id="setup-uid-info"></div>
+      <div class="modal-actions">
+        <button class="btn-admin-primary" onclick="setupFirstAdmin()">✅ Evet, Admin Olarak Kayıt Et</button>
+        <button class="btn-admin-secondary" onclick="adminLogout()">Giriş Yapma</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ADMIN DASHBOARD ===== -->
+  <div id="admin-dashboard" class="admin-dashboard hidden">
+
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="as-brand">
+        <span class="as-icon">⚙️</span>
+        <span>StudyPom Admin</span>
+      </div>
+      <nav class="as-nav">
+        <button class="as-nav-item active" id="anav-stats" onclick="showAdminView('stats')">
+          📊 İstatistikler
+        </button>
+        <button class="as-nav-item" id="anav-users" onclick="showAdminView('users')">
+          👥 Kullanıcılar
+        </button>
+        <button class="as-nav-item" id="anav-support" onclick="showAdminView('support')">
+          💬 Destek Talepleri
+          <span class="as-badge" id="support-count">0</span>
+        </button>
+        <button class="as-nav-item" id="anav-announce" onclick="showAdminView('announce')">
+          📢 Duyuru Gönder
+        </button>
+      </nav>
+      <div class="as-footer">
+        <div class="as-admin-info" id="as-admin-info">Admin</div>
+        <button class="btn-as-logout" onclick="adminLogout()">Çıkış</button>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="admin-main">
+
+      <!-- VIEW: STATS -->
+      <div id="aview-stats" class="aview active">
+        <div class="aview-header">
+          <h1>📊 Platform İstatistikleri</h1>
+          <button class="btn-admin-secondary" onclick="loadStats()">🔄 Yenile</button>
+        </div>
+        <div class="stats-cards" id="admin-stats-cards">
+          <div class="sc-card">
+            <div class="sc-icon">👥</div>
+            <div class="sc-val" id="stat-total-users">—</div>
+            <div class="sc-label">Toplam Kullanıcı</div>
+          </div>
+          <div class="sc-card gold">
+            <div class="sc-icon">⭐</div>
+            <div class="sc-val" id="stat-pro-users">—</div>
+            <div class="sc-label">Pro Üye</div>
+          </div>
+          <div class="sc-card">
+            <div class="sc-icon">🆓</div>
+            <div class="sc-val" id="stat-free-users">—</div>
+            <div class="sc-label">Ücretsiz Üye</div>
+          </div>
+          <div class="sc-card">
+            <div class="sc-icon">💬</div>
+            <div class="sc-val" id="stat-support-count">—</div>
+            <div class="sc-label">Açık Destek</div>
+          </div>
+        </div>
+
+        <!-- Revenue estimate -->
+        <div class="revenue-card">
+          <h3>💰 Aylık Tahmini Gelir</h3>
+          <div class="revenue-num" id="revenue-num">—</div>
+          <p class="revenue-desc">Pro üye sayısı × ₺39</p>
+        </div>
+      </div>
+
+      <!-- VIEW: USERS -->
+      <div id="aview-users" class="aview">
+        <div class="aview-header">
+          <h1>👥 Kullanıcı Yönetimi</h1>
+          <div class="aview-actions">
+            <input type="text" id="user-search" placeholder="İsim veya e-posta ara…" oninput="filterUsers()" class="admin-search" />
+            <button class="btn-admin-secondary" onclick="loadUsers()">🔄 Yenile</button>
+          </div>
+        </div>
+        <div class="users-table-wrap">
+          <table class="admin-table" id="users-table">
+            <thead>
+              <tr>
+                <th>Kullanıcı</th>
+                <th>E-posta</th>
+                <th>Plan</th>
+                <th>Sınav Türleri</th>
+                <th>İşlemler</th>
+              </tr>
+            </thead>
+            <tbody id="users-tbody">
+              <tr><td colspan="5" class="empty-row">Yükleniyor…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- VIEW: SUPPORT -->
+      <div id="aview-support" class="aview">
+        <div class="aview-header">
+          <h1>💬 Destek Talepleri</h1>
+          <button class="btn-admin-secondary" onclick="loadSupport()">🔄 Yenile</button>
+        </div>
+        <div class="support-list" id="support-list">
+          <p class="empty-row">Yükleniyor…</p>
+        </div>
+      </div>
+
+      <!-- VIEW: ANNOUNCE -->
+      <div id="aview-announce" class="aview">
+        <div class="aview-header">
+          <h1>📢 Duyuru Gönder</h1>
+        </div>
+        <div class="announce-form-card">
+          <div class="af-field">
+            <label>Duyuru Mesajı</label>
+            <textarea id="announce-msg" placeholder="Tüm kullanıcılara gösterilecek mesaj..." rows="4"></textarea>
+          </div>
+          <div class="af-field">
+            <label>Tip</label>
+            <div class="af-types">
+              <label class="af-type-btn"><input type="radio" name="ann-type" value="info" checked /> ℹ️ Bilgi</label>
+              <label class="af-type-btn"><input type="radio" name="ann-type" value="success" /> ✅ Başarı</label>
+              <label class="af-type-btn"><input type="radio" name="ann-type" value="warning" /> ⚠️ Uyarı</label>
+            </div>
+          </div>
+          <button class="btn-admin-primary" onclick="sendAnnouncement()">📢 Duyuruyu Gönder</button>
+        </div>
+        
+        <div style="margin-top: 30px;">
+          <h2>Aktif Duyurular</h2>
+          <div id="active-ann-list" style="margin-top:10px; display:flex; flex-direction:column; gap:10px;">
+            <p class="empty-row">Yükleniyor...</p>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- User Plan Modal -->
+  <div id="modal-user-plan" class="modal-overlay hidden">
+    <div class="modal-box">
+      <h3>Plan Değiştir</h3>
+      <div id="plan-modal-user-info" style="margin-bottom:16px;color:#999;font-size:14px;"></div>
+      <div class="plan-modal-options">
+        <button class="btn-plan-opt" onclick="setUserPlan('free')">🆓 Ücretsiz</button>
+        <button class="btn-plan-opt gold" onclick="setUserPlan('pro')">⭐ Pro (1 Ay)</button>
+        <button class="btn-plan-opt gold" onclick="setUserPlan('pro', 3)">⭐ Pro (3 Ay)</button>
+        <button class="btn-plan-opt gold" onclick="setUserPlan('pro', 12)">⭐ Pro (12 Ay)</button>
+      </div>
+      <button class="btn-admin-secondary" onclick="hideUserPlanModal()" style="margin-top:16px">İptal</button>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="admin-toast" class="admin-toast hidden"></div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/firebase.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

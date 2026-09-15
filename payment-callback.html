@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ödeme Sonucu – StudyPom</title>
+  <meta name="robots" content="noindex" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root { --gold: #C9A84C; --gold-dark: #9A7D3A; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Outfit', system-ui, sans-serif;
+      background: #0a0806;
+      color: #F5F1E8;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 24px;
+      padding: 52px 48px;
+      max-width: 440px;
+      width: 100%;
+      text-align: center;
+    }
+    .icon { font-size: 60px; margin-bottom: 20px; }
+    h1 { font-size: 26px; font-weight: 800; margin-bottom: 12px; }
+    p { font-size: 15px; color: rgba(245,241,232,.6); line-height: 1.7; margin-bottom: 28px; }
+    .spinner {
+      width: 48px; height: 48px;
+      border: 4px solid rgba(255,255,255,.1);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 20px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .btn {
+      display: inline-block;
+      padding: 14px 32px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+      color: #0a0806;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,168,76,.4); }
+    .error-box { display: none; }
+    .error-box .icon { color: #ef5350; }
+    #result-area { min-height: 200px; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div id="result-area">
+      <div class="spinner"></div>
+      <p>Ödeme doğrulanıyor, lütfen bekleyin…</p>
+    </div>
+  </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-functions-compat.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script>
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const functions = firebase.functions();
+
+    function showResult(success, message) {
+      document.getElementById('result-area').innerHTML = `
+        <div class="icon">${success ? '🎉' : '❌'}</div>
+        <h1>${success ? 'Ödeme Başarılı!' : 'Ödeme Başarısız'}</h1>
+        <p>${message}</p>
+        <a href="app.html" class="btn">Uygulamaya Git →</a>
+      `;
+    }
+
+    async function confirmPayment() {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('token');
+
+      if (!token) {
+        showResult(false, 'Geçersiz ödeme bağlantısı. Lütfen tekrar deneyin.');
+        return;
+      }
+
+      // Kullanıcı giriş yapmış mı bekle
+      auth.onAuthStateChanged(async (user) => {
+        if (!user) {
+          showResult(false, 'Lütfen önce giriş yapın, ardından tekrar deneyin.');
+          return;
+        }
+        try {
+          const confirmFn = functions.httpsCallable('confirmPayment');
+          await confirmFn({ token });
+          showResult(true, 'StudyPom Pro planınız aktifleştirildi! 🚀 Sınırsız sınav türü ve tüm özelliklere artık erişebilirsiniz.');
+          // 5 saniye sonra uygulamaya yönlendir
+          setTimeout(() => { window.location.href = 'app.html'; }, 5000);
+        } catch (err) {
+          showResult(false, err.message || 'Ödeme doğrulanamadı. Lütfen destek@studypom.app adresine yazın.');
+        }
+      });
+    }
+
+    confirmPayment();
+  </script>
+</body>
+</html>

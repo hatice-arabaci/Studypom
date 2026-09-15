@@ -1,0 +1,17 @@
+{
+  "name": "studypom-functions",
+  "version": "1.0.0",
+  "description": "StudyPom Firebase Cloud Functions – Iyzico ödeme entegrasyonu",
+  "main": "index.js",
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "firebase-admin": "^11.8.0",
+    "firebase-functions": "^4.3.1",
+    "iyzipay": "^2.0.22",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {},
+  "private": true
+}

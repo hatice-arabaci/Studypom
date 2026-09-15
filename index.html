@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StudyPom – Akıllı Sınav Takip & Pomodoro Sistemi</title>
+  <meta name="description" content="TYT, AYT, LGS, KPSS için özel tasarlanmış Pomodoro zamanlayıcısı. Ders bazlı çalışma sürelerini takip et, haftalık analizlerinle performansını ölç. Ücretsiz başla!" />
+  <meta property="og:title" content="StudyPom – Akıllı Sınav Takip Sistemi" />
+  <meta property="og:description" content="Sınava hazırlanırken odaklan, takip et, başar. Pomodoro + analitik + çoklu sınav desteği." />
+  <meta property="og:type" content="website" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/landing.css" />
+</head>
+<body>
+
+<!-- ===== NAVIGATION ===== -->
+<nav class="nav" id="main-nav">
+  <div class="nav-container">
+    <a href="index.html" class="nav-logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 40 40" fill="none">
+          <circle cx="20" cy="20" r="18" stroke="currentColor" stroke-width="2"/>
+          <path d="M20 10 L20 20 L28 20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="20" cy="20" r="2.5" fill="currentColor"/>
+        </svg>
+      </div>
+      <span>StudyPom</span>
+    </a>
+    <div class="nav-links" id="nav-links">
+      <a href="#features" class="nav-link">Özellikler</a>
+      <a href="#how-it-works" class="nav-link">Nasıl Çalışır</a>
+      <a href="#pricing" class="nav-link">Fiyatlar</a>
+      <a href="#faq" class="nav-link">SSS</a>
+    </div>
+    <div class="nav-cta">
+      <a href="app.html" class="btn-nav-login">Giriş Yap</a>
+      <a href="app.html#register" class="btn-nav-register" id="nav-register-btn">Ücretsiz Başla</a>
+    </div>
+    <button class="nav-hamburger" id="nav-hamburger" onclick="toggleMobileNav()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="hero-bg">
+    <div class="hero-orb hero-orb-1"></div>
+    <div class="hero-orb hero-orb-2"></div>
+    <div class="hero-orb hero-orb-3"></div>
+    <div class="hero-grid"></div>
+  </div>
+
+  <div class="hero-container">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      <span>TYT · AYT · LGS · KPSS · ALES için özel</span>
+    </div>
+
+    <h1 class="hero-title">
+      Sınava Hazırlanmanın<br/>
+      <span class="hero-gradient">En Akıllı</span> Yolu
+    </h1>
+
+    <p class="hero-subtitle">
+      Pomodoro zamanlayıcısı, ders bazlı takip ve haftalık analizlerle
+      çalışma verimliliğinizi <strong>3x artırın</strong>.
+    </p>
+
+    <div class="hero-actions">
+      <a href="app.html#register" class="btn-hero-primary">
+        🚀 Ücretsiz Başla
+        <span class="btn-arrow">→</span>
+      </a>
+      <a href="app.html" class="btn-hero-secondary">
+        Giriş Yap
+      </a>
+    </div>
+
+    <div class="hero-trust">
+      <div class="trust-item">✓ Kredi kartı gerekmez</div>
+      <div class="trust-item">✓ Kurulum yok</div>
+      <div class="trust-item">✓ 1 dakikada başla</div>
+    </div>
+
+    <!-- Mockup UI -->
+    <div class="hero-mockup">
+      <div class="mockup-window">
+        <div class="mockup-bar">
+          <span class="dot red"></span>
+          <span class="dot yellow"></span>
+          <span class="dot green"></span>
+          <span class="mockup-url">studypom.web.app</span>
+        </div>
+        <div class="mockup-content">
+          <!-- Stats row -->
+          <div class="mock-stats">
+            <div class="mock-stat"><div class="ms-label">Bugün</div><div class="ms-val">2 sa 15 dk</div></div>
+            <div class="mock-stat"><div class="ms-label">Bu Hafta</div><div class="ms-val">14 sa 30 dk</div></div>
+            <div class="mock-stat"><div class="ms-label">Seri</div><div class="ms-val">🔥 7 gün</div></div>
+            <div class="mock-stat"><div class="ms-label">Seanslar</div><div class="ms-val">48</div></div>
+          </div>
+          <!-- Timer ring -->
+          <div class="mock-timer">
+            <div class="mock-ring">
+              <svg viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(154,125,58,.15)" stroke-width="8"/>
+                <circle cx="60" cy="60" r="50" fill="none" stroke="url(#mg)" stroke-width="8"
+                  stroke-dasharray="314" stroke-dashoffset="90" stroke-linecap="round"
+                  transform="rotate(-90 60 60)"/>
+                <defs>
+                  <linearGradient id="mg" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#C9A84C"/>
+                    <stop offset="100%" stop-color="#9A7D3A"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+              <div class="mock-time">18:42</div>
+            </div>
+            <div class="mock-subject-list">
+              <div class="mock-subj active">📖 Matematik</div>
+              <div class="mock-subj">⚡ Fizik</div>
+              <div class="mock-subj">🧬 Biyoloji</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== STATS BAR ===== -->
+<section class="stats-bar">
+  <div class="stats-bar-container">
+    <div class="stat-bar-item">
+      <span class="sbi-num">10.000+</span>
+      <span class="sbi-label">Aktif Öğrenci</span>
+    </div>
+    <div class="sbi-divider"></div>
+    <div class="stat-bar-item">
+      <span class="sbi-num">500.000+</span>
+      <span class="sbi-label">Tamamlanan Seans</span>
+    </div>
+    <div class="sbi-divider"></div>
+    <div class="stat-bar-item">
+      <span class="sbi-num">8</span>
+      <span class="sbi-label">Sınav Kategorisi</span>
+    </div>
+    <div class="sbi-divider"></div>
+    <div class="stat-bar-item">
+      <span class="sbi-num">%94</span>
+      <span class="sbi-label">Memnuniyet</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FEATURES ===== -->
+<section class="features" id="features">
+  <div class="section-container">
+    <div class="section-tag">✨ Özellikler</div>
+    <h2 class="section-title">Her adımda yanında</h2>
+    <p class="section-sub">Sınavdan sınava taşınan, bulut tabanlı akıllı çalışma sistemi</p>
+
+    <div class="features-grid">
+      <div class="feature-card fc-wide">
+        <div class="fc-icon">⏱️</div>
+        <h3>Pomodoro Zamanlayıcı</h3>
+        <p>Odak modunda çalış, mola zamanlarını ayarla. Fullscreen odak ekranıyla dikkat dağıtıcı her şeyi ortadan kaldır.</p>
+        <div class="fc-tags">
+          <span>Konu Çalışma</span>
+          <span>Soru Çözme</span>
+          <span>Mola Yönetimi</span>
+        </div>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon">📊</div>
+        <h3>Haftalık Analizler</h3>
+        <p>Günlük çalışma grafiği, ders dağılımı ve haftalık özetlerinle performansını ölç.</p>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon">📚</div>
+        <h3>Çoklu Sınav Desteği</h3>
+        <p>TYT, AYT Sayısal/EA/Sözel, LGS, KPSS, DGS, ALES ve YDT sınavları için özel ders listeleri.</p>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon">☁️</div>
+        <h3>Bulut Senkronizasyon</h3>
+        <p>Tüm veriler Firebase üzerinde gerçek zamanlı olarak saklanır. Her cihazdan erişebilirsin.</p>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon">🔥</div>
+        <h3>Seri Takibi</h3>
+        <p>Günlük çalışma serini kır. Motivasyonunu canlı tut, her gün biraz daha ilerle.</p>
+      </div>
+      <div class="feature-card">
+        <div class="fc-icon">📋</div>
+        <h3>Geçmiş Kayıtlar</h3>
+        <p>Tamamladığın tüm seansları, doğru/yanlış sayılarını ve net hesapları tek ekranda gör.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== HOW IT WORKS ===== -->
+<section class="how-it-works" id="how-it-works">
+  <div class="section-container">
+    <div class="section-tag">🎯 Nasıl Çalışır</div>
+    <h2 class="section-title">3 adımda başla</h2>
+
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">01</div>
+        <div class="step-icon">✍️</div>
+        <h3>Kayıt Ol</h3>
+        <p>E-posta adresinle 30 saniyede ücretsiz hesap oluştur. Kredi kartı gerekmez.</p>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step-card">
+        <div class="step-num">02</div>
+        <div class="step-icon">📚</div>
+        <h3>Sınavını Seç</h3>
+        <p>TYT, AYT, LGS veya hazırlandığın sınavı seç. Ders listesi otomatik oluşturulur.</p>
+      </div>
+      <div class="step-arrow">→</div>
+      <div class="step-card">
+        <div class="step-num">03</div>
+        <div class="step-icon">🚀</div>
+        <h3>Çalışmaya Başla</h3>
+        <p>Pomodoro zamanlayıcını başlat, seansları kaydet, analizlerinle gelişimini izle.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== PRICING ===== -->
+<section class="pricing" id="pricing">
+  <div class="section-container">
+    <div class="section-tag">💎 Fiyatlar</div>
+    <h2 class="section-title">Senin için doğru plan</h2>
+    <p class="section-sub">Her bütçeye uygun, her seviyeye özel</p>
+
+    <div class="pricing-grid">
+      <!-- Free Plan -->
+      <div class="pricing-card free-card">
+        <div class="pc-header">
+          <div class="pc-plan-name">Ücretsiz</div>
+          <div class="pc-price">
+            <span class="pc-amount">₺0</span>
+            <span class="pc-period">/ay</span>
+          </div>
+          <p class="pc-desc">Başlamak için ideal</p>
+        </div>
+        <ul class="pc-features">
+          <li class="included">✓ Sınırsız sınav türü seçimi</li>
+          <li class="included">✓ Pomodoro zamanlayıcı</li>
+          <li class="included">✓ 7 günlük geçmiş</li>
+          <li class="included">✓ Temel analizler</li>
+          <li class="included">✓ Bulut kayıt</li>
+          <li class="included">✓ Günlük ajanda</li>
+          <li class="excluded">✗ Tam geçmiş (tüm haftalar)</li>
+          <li class="excluded">✗ CSV export</li>
+          <li class="excluded">✗ Öncelikli destek</li>
+        </ul>
+        <a href="app.html#register" class="btn-pc-free">Ücretsiz Başla</a>
+      </div>
+
+      <!-- Pro Plan -->
+      <div class="pricing-card pro-card">
+        <div class="pc-popular">⭐ En Popüler</div>
+        <div class="pc-header">
+          <div class="pc-plan-name">Pro</div>
+          <div class="pc-price">
+            <span class="pc-amount">₺39</span>
+            <span class="pc-period">/ay</span>
+          </div>
+          <p class="pc-desc">Ciddi öğrenciler için</p>
+        </div>
+        <ul class="pc-features">
+          <li class="included">✓ Sınırsız sınav türü</li>
+          <li class="included">✓ Pomodoro zamanlayıcı</li>
+          <li class="included">✓ Sınırsız geçmiş</li>
+          <li class="included">✓ Detaylı analizler</li>
+          <li class="included">✓ Bulut kayıt</li>
+          <li class="included">✓ CSV veri export</li>
+          <li class="included">✓ Geçmiş haftalara erişim</li>
+          <li class="included">✓ Öncelikli destek</li>
+          <li class="included">✓ Tüm yeni özellikler</li>
+        </ul>
+        <a href="app.html#register" class="btn-pc-pro">Pro ile Başla — ₺39/ay</a>
+        <p class="pc-note">İstediğin zaman iptal edebilirsin</p>
+      </div>
+    </div>
+
+    <div class="pricing-guarantee">
+      🔒 256-bit SSL şifreleme · Güvenli ödeme (Iyzico) · İstediğin zaman iptal
+    </div>
+  </div>
+</section>
+
+<!-- ===== TESTIMONIALS ===== -->
+<section class="testimonials">
+  <div class="section-container">
+    <div class="section-tag">💬 Kullanıcı Yorumları</div>
+    <h2 class="section-title">Öğrenciler ne diyor?</h2>
+
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="tc-stars">★★★★★</div>
+        <p class="tc-text">"TYT için kullanmaya başladım, artık hangi derste ne kadar zaman geçirdiğimi görebiliyorum. Çok işe yaradı!"</p>
+        <div class="tc-author">
+          <div class="tc-avatar">A</div>
+          <div>
+            <div class="tc-name">Ayşe K.</div>
+            <div class="tc-exam">TYT / AYT Sayısal</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="tc-stars">★★★★★</div>
+        <p class="tc-text">"KPSS çalışırken pomodoro tekniğini hiç bu kadar düzenli kullanmamıştım. Analytics sayfası gerçekten motivasyon veriyor."</p>
+        <div class="tc-author">
+          <div class="tc-avatar">M</div>
+          <div>
+            <div class="tc-name">Mehmet Y.</div>
+            <div class="tc-exam">KPSS</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="tc-stars">★★★★★</div>
+        <p class="tc-text">"LGS'ye hazırlanan kızım kullanıyor. Her derse ayrı süre takibi yapabilmesi harikaydı. Keşke erişinden bulsaydım!"</p>
+        <div class="tc-author">
+          <div class="tc-avatar">F</div>
+          <div>
+            <div class="tc-name">Fatma Ö.</div>
+            <div class="tc-exam">LGS velisi</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FAQ ===== -->
+<section class="faq" id="faq">
+  <div class="section-container faq-container">
+    <div class="section-tag">❓ Sık Sorulan Sorular</div>
+    <h2 class="section-title">Merak ettikleriniz</h2>
+
+    <div class="faq-list" id="faq-list">
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          StudyPom gerçekten ücretsiz mi?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>Evet! Ücretsiz planımızla sınırsız sınav türü seçerek, Pomodoro zamanlayıcısını kullanarak, günlük ajanda özelliğiyle ve 7 günlük geçmişinize erişerek StudyPom'u sonsuza kadar ücretsiz kullanabilirsiniz. Pro plan ile tam geçmiş, CSV export ve öncelikli desteğe erişebilirsiniz.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          Hangi sınavlar için uygun?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>StudyPom; TYT, AYT Sayısal, AYT Eşit Ağırlık, AYT Sözel, LGS, KPSS, DGS, ALES ve YDT sınavları için özel ders listeleriyle hazırlanmıştır. Her sınav türünün dersleri ayrı olarak takip edilir.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          Verilerim güvende mi?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>Tüm verileriniz Google Firebase altyapısında şifrelenmiş olarak saklanır. Sadece sizin hesabınızla erişilebilir. Hiçbir zaman üçüncü taraflarla paylaşılmaz.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          Pro planı nasıl iptal edebilirim?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>İstediğiniz zaman iptal edebilirsiniz. Uygulamadaki Destek formu üzerinden veya e-posta ile bize ulaşarak aylık üyeliğinizi sonlandırabilirsiniz. İptal işleminden sonra mevcut dönem sonuna kadar Pro özelliklerine erişmeye devam edersiniz.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          Telefonda da kullanabilir miyim?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>Evet! StudyPom tam responsive tasarıma sahiptir. Telefon, tablet ve bilgisayardan aynı hesapla erişebilirsiniz. Verileriniz otomatik olarak tüm cihazlarda senkronize edilir.</p>
+        </div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-question" onclick="toggleFaq(this)">
+          Ödeme güvenli mi?
+          <span class="faq-icon">+</span>
+        </button>
+        <div class="faq-answer">
+          <p>Ödemeler Türkiye'nin önde gelen ödeme altyapısı Iyzico üzerinden 256-bit SSL şifreleme ile güvenli şekilde işlenir. Kart bilgileriniz asla sistemlerimizde saklanmaz.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== CTA BANNER ===== -->
+<section class="cta-banner">
+  <div class="cta-container">
+    <div class="cta-orb cta-orb-1"></div>
+    <div class="cta-orb cta-orb-2"></div>
+    <div class="cta-content">
+      <h2>Bugün başlamak için<br/>tek bir neden yeterli</h2>
+      <p>Her geçen dakika karşındaki aday çalışıyor. Sen de şimdi başla.</p>
+      <a href="app.html#register" class="btn-cta">🚀 Ücretsiz Hesap Oluştur</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="footer-container">
+    <div class="footer-brand">
+      <div class="footer-logo">
+        <div class="logo-icon small">
+          <svg viewBox="0 0 40 40" fill="none">
+            <circle cx="20" cy="20" r="18" stroke="currentColor" stroke-width="2"/>
+            <path d="M20 10 L20 20 L28 20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="20" cy="20" r="2.5" fill="currentColor"/>
+          </svg>
+        </div>
+        <span>StudyPom</span>
+      </div>
+      <p class="footer-tagline">Akıllı çalışma, akıllı başarı.</p>
+    </div>
+
+    <div class="footer-links">
+      <div class="footer-col">
+        <h4>Ürün</h4>
+        <a href="#features">Özellikler</a>
+        <a href="#pricing">Fiyatlar</a>
+        <a href="#how-it-works">Nasıl Çalışır</a>
+      </div>
+      <div class="footer-col">
+        <h4>Destek</h4>
+        <a href="#faq">SSS</a>
+        <a href="app.html">Uygulamaya Git</a>
+        <a href="admin.html">Admin</a>
+      </div>
+      <div class="footer-col">
+        <h4>Sınavlar</h4>
+        <a href="app.html">TYT / AYT</a>
+        <a href="app.html">LGS</a>
+        <a href="app.html">KPSS / ALES</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>© 2026 StudyPom. Tüm hakları saklıdır.</p>
+    <div class="footer-bottom-links">
+      <a href="#">Gizlilik Politikası</a>
+      <a href="#">Kullanım Koşulları</a>
+    </div>
+  </div>
+</footer>
+
+<script src="js/landing.js"></script>
+</body>
+</html>

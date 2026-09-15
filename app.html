@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>StudyPom – Sınav Takip Uygulaması</title>
+  <meta name="description"
+    content="Pomodoro zamanlayıcısı ile sınava hazırlan, ders bazlı çalışma sürelerini takip et ve haftalık analizlerinle performansını ölç." />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/agenda.css" />
+  <link rel="stylesheet" href="css/ai-chat.css" />
+</head>
+
+<body>
+
+  <!-- ===== SCREEN: AUTH ===== -->
+  <div id="screen-auth" class="screen active">
+    <div class="auth-bg">
+      <div class="auth-orb auth-orb-1"></div>
+      <div class="auth-orb auth-orb-2"></div>
+      <div class="auth-orb auth-orb-3"></div>
+    </div>
+    <div class="auth-container">
+      <div class="auth-brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 40 40" fill="none">
+            <circle cx="20" cy="20" r="18" stroke="currentColor" stroke-width="2" />
+            <path d="M20 10 L20 20 L28 20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+            <circle cx="20" cy="20" r="2.5" fill="currentColor" />
+          </svg>
+        </div>
+        <span class="brand-name">StudyPom</span>
+      </div>
+      <p class="auth-tagline">Bulut tabanlı akıllı sınav takip sistemi</p>
+
+      <div class="auth-tabs">
+        <button id="tab-login" class="auth-tab active" onclick="switchTab('login')">Giriş Yap</button>
+        <button id="tab-register" class="auth-tab" onclick="switchTab('register')">Kayıt Ol</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="form-login" class="auth-form active" onsubmit="handleLogin(event)">
+        <div class="field-group">
+          <label>E-posta</label>
+          <input type="email" id="login-email" placeholder="ornek@email.com" required />
+        </div>
+        <div class="field-group">
+          <label>Şifre</label>
+          <div class="password-wrap">
+            <input type="password" id="login-password" placeholder="••••••••" required />
+            <button type="button" class="toggle-pw" onclick="togglePw('login-password',this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <button type="submit" class="btn-primary btn-full" id="btn-login">
+          <span>Giriş Yap</span>
+          <div class="btn-loader hidden"></div>
+        </button>
+        <button type="button" class="btn-text-sm" onclick="handleForgotPassword()">Şifremi unuttum</button>
+        <a href="index.html" class="btn-demo">← Ana sayfaya dön</a>
+      </form>
+
+      <!-- Register Form -->
+      <form id="form-register" class="auth-form" onsubmit="handleRegister(event)">
+        <div class="field-group">
+          <label>Ad Soyad</label>
+          <input type="text" id="reg-name" placeholder="Adınız Soyadınız" required />
+        </div>
+        <div class="field-group">
+          <label>E-posta</label>
+          <input type="email" id="reg-email" placeholder="ornek@email.com" required />
+        </div>
+        <div class="field-group">
+          <label>Şifre</label>
+          <div class="password-wrap">
+            <input type="password" id="reg-password" placeholder="En az 6 karakter" required />
+            <button type="button" class="toggle-pw" onclick="togglePw('reg-password',this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <button type="submit" class="btn-primary btn-full" id="btn-register">
+          <span>Hesap Oluştur</span>
+          <div class="btn-loader hidden"></div>
+        </button>
+        <a href="index.html" class="btn-demo">← Ana sayfaya dön</a>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== SCREEN: EXAM SELECT ===== -->
+  <div id="screen-exam-select" class="screen">
+    <div class="onboard-bg"></div>
+    <div class="onboard-container">
+      <div class="onboard-header">
+        <div class="auth-brand small">
+          <div class="brand-icon"><svg viewBox="0 0 40 40" fill="none">
+              <circle cx="20" cy="20" r="18" stroke="currentColor" stroke-width="2" />
+              <path d="M20 10 L20 20 L28 20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+              <circle cx="20" cy="20" r="2.5" fill="currentColor" />
+            </svg></div>
+          <span class="brand-name">StudyPom</span>
+        </div>
+        <h1>Sınav Türlerini Seç</h1>
+        <p>Hangi sınavlara hazırlanıyorsun? <span id="exam-select-plan-note" class="plan-note"></span></p>
+      </div>
+      <div class="exam-grid" id="exam-grid">
+        <!-- filled by JS -->
+      </div>
+      <button class="btn-primary btn-full" id="btn-confirm-exam" onclick="confirmExamSelect()" disabled>
+        Devam Et →
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== SCREEN: DASHBOARD ===== -->
+  <div id="screen-dashboard" class="screen">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon small">
+          <svg viewBox="0 0 40 40" fill="none">
+            <circle cx="20" cy="20" r="18" stroke="currentColor" stroke-width="2" />
+            <path d="M20 10 L20 20 L28 20" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+            <circle cx="20" cy="20" r="2.5" fill="currentColor" />
+          </svg>
+        </div>
+        <span class="brand-name">StudyPom</span>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item active" id="nav-home" onclick="switchView('home')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            <polyline points="9 22 9 12 15 12 15 22" />
+          </svg>
+          <span>Ana Sayfa</span>
+        </button>
+        <button class="nav-item" id="nav-timer" onclick="switchView('timer')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+          <span>Çalışma Zamanlayıcı</span>
+        </button>
+        <button class="nav-item" id="nav-analytics" onclick="switchView('analytics')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10" />
+            <line x1="12" y1="20" x2="12" y2="4" />
+            <line x1="6" y1="20" x2="6" y2="14" />
+          </svg>
+          <span>Analizler</span>
+        </button>
+        <button class="nav-item" id="nav-history" onclick="switchView('history')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+          </svg>
+          <span>Geçmiş Kayıtlar</span>
+        </button>
+        <button class="nav-item" id="nav-agenda" onclick="switchView('agenda')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg>
+          <span>Günlük Ajanda</span>
+        </button>
+        <button class="nav-item" id="nav-notes" onclick="switchView('notes')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          <span>Günlük Notlar</span>
+        </button>
+        <button class="nav-item" id="nav-settings" onclick="switchView('settings')">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+          </svg>
+          <span>Ayarlar</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-chip" id="sidebar-user">
+          <div class="user-avatar" id="sidebar-avatar">A</div>
+          <div class="user-info">
+            <span id="sidebar-name">Kullanıcı</span>
+            <span id="sidebar-exam">—</span>
+          </div>
+          <span class="plan-chip" id="sidebar-plan-chip">FREE</span>
+        </div>
+        <button class="btn-logout" id="btn-logout" onclick="handleLogout()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Hamburger -->
+    <button class="hamburger" id="hamburger" onclick="toggleSidebar()">
+      <span></span><span></span><span></span>
+    </button>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+      <!-- VIEW: HOME -->
+      <div id="view-home" class="view active">
+        <div class="view-header">
+          <div>
+            <h2 id="home-greeting">Merhaba 👋</h2>
+            <p class="view-sub" id="home-date">Bugün harika bir gün!</p>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
+            <div class="streak-badge" id="streak-badge">
+              <span>🔥</span>
+              <span id="streak-count">0</span>
+              <span>gün seri</span>
+            </div>
+            <div class="online-badge" style="font-size:12px; color:var(--text-2); display:flex; align-items:center; gap:6px; background:var(--surface); padding:6px 12px; border-radius:20px; border:1px solid var(--border); box-shadow:0 2px 4px rgba(0,0,0,0.02);">
+              <span style="width:8px; height:8px; background:#4CAF50; border-radius:50%; display:inline-block; box-shadow: 0 0 0 2px rgba(76,175,80,0.2);"></span>
+              <span id="online-count">Seninle beraber 1 kişi ders çalışıyor</span>
+            </div>
+            <div id="exam-countdown-badge" class="hidden" style="font-size:12px; color:var(--gold-dark); display:flex; align-items:center; gap:6px; background:var(--gold-10); padding:6px 12px; border-radius:20px; border:1px solid var(--gold); box-shadow:0 2px 4px rgba(0,0,0,0.02); font-weight:600;">
+              <span>⏳</span>
+              <span id="exam-countdown-text"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Duyuru Banner (Gizli olarak başlar, JS ile doldurulur) -->
+        <div id="dashboard-announcement" class="hidden" style="margin-bottom: 24px; padding: 12px 16px; border-radius: 12px; font-size: 14px; display: flex; align-items: center; gap: 12px; background: var(--surface); border-left: 4px solid var(--gold); box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+          <span id="da-icon" style="font-size: 18px;">📢</span>
+          <span id="da-text" style="color: var(--text); line-height: 1.4;"></span>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="stats-grid" id="stats-grid">
+          <div class="stat-card" id="stat-today">
+            <div class="stat-icon" style="background: var(--gold-10)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2">
+                <circle cx="12" cy="12" r="10" />
+                <polyline points="12 6 12 12 16 14" />
+              </svg>
+            </div>
+            <div>
+              <p class="stat-label">Bugün</p>
+              <p class="stat-value" id="val-today">0 dk</p>
+            </div>
+          </div>
+          <div class="stat-card" id="stat-week">
+            <div class="stat-icon" style="background: #e8f5e9">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#4caf50" stroke-width="2">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+              </svg>
+            </div>
+            <div>
+              <p class="stat-label">Bu Hafta</p>
+              <p class="stat-value" id="val-week">0 dk</p>
+            </div>
+          </div>
+          <div class="stat-card" id="stat-sessions">
+            <div class="stat-icon" style="background: #e3f2fd">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#2196f3" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
+            </div>
+            <div>
+              <p class="stat-label">Toplam Seans</p>
+              <p class="stat-value" id="val-sessions">0</p>
+            </div>
+          </div>
+          <div class="stat-card" id="stat-best">
+            <div class="stat-icon" style="background: #fce4ec">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#e91e63" stroke-width="2">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg>
+            </div>
+            <div>
+              <p class="stat-label">En İyi Gün</p>
+              <p class="stat-value" id="val-best">0 dk</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Subjects -->
+        <div class="section-header">
+          <h3>Dersler</h3>
+          <span class="exam-badge" id="home-exam-badge">—</span>
+        </div>
+        <div class="subjects-grid" id="subjects-grid">
+          <!-- filled by JS -->
+        </div>
+      </div>
+
+      <!-- VIEW: TIMER -->
+      <div id="view-timer" class="view">
+        <div class="view-header">
+          <div>
+            <h2>Pomodoro Zamanlayıcı</h2>
+            <p class="view-sub" id="timer-subject-label">Ders seçilmedi</p>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
+            <div id="exam-countdown-badge-timer" class="hidden" style="font-size:12px; color:var(--gold-dark); display:flex; align-items:center; gap:6px; background:var(--gold-10); padding:6px 12px; border-radius:20px; border:1px solid var(--gold); box-shadow:0 2px 4px rgba(0,0,0,0.02); font-weight:600;">
+              <span>⏳</span>
+              <span id="exam-countdown-text-timer"></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="timer-layout">
+          <!-- Left: settings -->
+          <div class="timer-settings">
+            <div class="setting-card">
+              <h4>Ders Seç</h4>
+              <div class="subject-pills" id="timer-subject-pills"><!-- JS --></div>
+            </div>
+            <div class="setting-card">
+              <h4>Mod Seç</h4>
+              <div class="mode-pills">
+                <button class="mode-pill active" id="mode-konu" onclick="selectMode('konu')">📖 Konu Çalış</button>
+                <button class="mode-pill" id="mode-soru" onclick="selectMode('soru')">✏️ Soru Çöz</button>
+              </div>
+            </div>
+            <div class="setting-card">
+              <h4>Süre Ayarla</h4>
+              <div class="duration-btns">
+                <button class="dur-btn" onclick="setDuration(1,this)">1 dk</button>
+                <button class="dur-btn active" onclick="setDuration(25,this)">25 dk</button>
+                <button class="dur-btn" onclick="setDuration(30,this)">30 dk</button>
+                <button class="dur-btn" onclick="setDuration(45,this)">45 dk</button>
+                <button class="dur-btn" onclick="setDuration(50,this)">50 dk</button>
+              </div>
+              <div style="margin-top: 12px; display: flex; gap: 8px;">
+                <input type="number" id="inp-custom-dur" placeholder="Özel süre (dk)" min="1" max="480" style="flex:1; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; outline: none; font-family: inherit;">
+                <button class="btn-outline" style="padding: 8px 16px; border-color: var(--gold); color: var(--gold);" onclick="setCustomDuration()">Uygula</button>
+              </div>
+            </div>
+            <!-- Result fields (shown after session) -->
+            <div class="setting-card result-card hidden" id="result-card">
+              <h4>Seans Sonucu</h4>
+              <div class="result-fields">
+                <div class="field-group small">
+                  <label>Doğru Sayısı</label>
+                  <input type="number" id="inp-correct" min="0" value="0" />
+                </div>
+                <div class="field-group small">
+                  <label>Yanlış Sayısı</label>
+                  <input type="number" id="inp-wrong" min="0" value="0" />
+                </div>
+                <button class="btn-primary" onclick="saveSession()">Kaydet</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: clock -->
+          <div class="timer-clock-area">
+            <div class="pomodoro-ring">
+              <svg viewBox="0 0 260 260" id="timer-svg">
+                <defs>
+                  <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="var(--gold)" />
+                    <stop offset="100%" stop-color="var(--gold-dark)" />
+                  </linearGradient>
+                </defs>
+                <circle cx="130" cy="130" r="110" class="ring-bg" />
+                <circle cx="130" cy="130" r="110" class="ring-progress" id="ring-progress" stroke-dasharray="691.15"
+                  stroke-dashoffset="0" transform="rotate(-90 130 130)" />
+              </svg>
+              <div class="clock-inner">
+                <div class="clock-time" id="clock-display">25:00</div>
+                <div class="clock-mode" id="clock-mode-label">Odak Süresi</div>
+              </div>
+            </div>
+
+            <div class="timer-controls">
+              <button class="ctrl-btn" id="btn-reset" onclick="resetTimer()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="1 4 1 10 7 10" />
+                  <path d="M3.51 15a9 9 0 1 0 .49-5" />
+                </svg>
+              </button>
+              <button class="ctrl-btn play" id="btn-play" onclick="toggleTimer()">
+                <svg id="play-icon" viewBox="0 0 24 24" fill="currentColor">
+                  <polygon points="5 3 19 12 5 21 5 3" />
+                </svg>
+                <svg id="pause-icon" viewBox="0 0 24 24" fill="currentColor" class="hidden">
+                  <rect x="6" y="4" width="4" height="16" />
+                  <rect x="14" y="4" width="4" height="16" />
+                </svg>
+              </button>
+              <button class="ctrl-btn" id="btn-skip" onclick="skipBreak()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="5 4 15 12 5 20 5 4" />
+                  <line x1="19" y1="5" x2="19" y2="19" />
+                </svg>
+              </button>
+            </div>
+
+            <div class="pomodoro-count">
+              <span id="pom-dots">⬤ ⬤ ⬤ ⬤</span>
+              <span id="pom-label">Pomodoro #1</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Session log -->
+        <div class="session-log" id="session-log-area">
+          <h4>Bugünkü Seanslar</h4>
+          <div id="session-log-list" class="session-items">
+            <p class="empty-hint">Henüz seans yok.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW: ANALYTICS -->
+      <div id="view-analytics" class="view">
+        <div class="view-header">
+          <div>
+            <h2>Haftalık Analizler</h2>
+            <p class="view-sub">Bu haftaki çalışma performansın</p>
+          </div>
+          <div class="week-nav">
+            <button onclick="changeWeek(-1)">‹</button>
+            <span id="week-label">Bu Hafta</span>
+            <button onclick="changeWeek(1)">›</button>
+          </div>
+        </div>
+
+        <!-- Free plan warning for old weeks -->
+        <div id="analytics-pro-banner" class="pro-lock-banner hidden">
+          <span>🔒 Geçmiş haftalara erişmek için <strong>Pro</strong> gerekli.</span>
+          <button class="btn-gold-sm"
+            onclick="showUpgradeModal('Geçmiş haftaların analizlerini görmek için Pro plana geçin.')">Pro\'ya Geç
+            →</button>
+        </div>
+
+        <div class="analytics-grid">
+          <!-- Bar chart -->
+          <div class="analytics-card wide">
+            <h4>Günlük Çalışma Süresi (dakika)</h4>
+            <div class="bar-chart-wrap">
+              <div class="bar-chart" id="bar-chart"><!-- JS --></div>
+            </div>
+          </div>
+          <!-- Pie / Donut chart -->
+          <div class="analytics-card">
+            <h4>Ders Dağılımı</h4>
+            <canvas id="donut-chart" width="220" height="220"></canvas>
+            <div class="donut-legend" id="donut-legend"></div>
+          </div>
+          <!-- Summary -->
+          <div class="analytics-card">
+            <h4>Haftalık Özet</h4>
+            <div class="summary-list" id="summary-list"><!-- JS --></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW: HISTORY -->
+      <div id="view-history" class="view">
+        <div class="view-header">
+          <div>
+            <h2>Geçmiş Kayıtlar</h2>
+            <p class="view-sub">Tüm çalışma seanslarının listesi</p>
+          </div>
+          <button class="btn-danger-sm" onclick="clearHistory()">Temizle</button>
+        </div>
+
+        <!-- Free plan banner -->
+        <div id="history-pro-banner" class="pro-lock-banner hidden">
+          <span>🔒 7 günden eski kayıtlar <strong>Pro</strong> ile görüntülenir.</span>
+          <button class="btn-gold-sm"
+            onclick="showUpgradeModal('7 günden eski çalışma kayıtlarına erişmek için Pro plana geçin.')">Pro\'ya Geç
+            →</button>
+        </div>
+
+        <!-- Filter pills -->
+        <div class="history-filters" id="history-filters">
+          <button class="filter-pill active" onclick="filterHistory('all')">📋 Tümü</button>
+          <!-- JS ile doldurulacak -->
+        </div>
+        <div class="history-table-wrap">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>Tarih</th>
+                <th>Sınav Türü</th>
+                <th>Ders</th>
+                <th>Mod</th>
+                <th>Süre</th>
+                <th>D/Y</th>
+              </tr>
+            </thead>
+            <tbody id="history-tbody">
+              <tr>
+                <td colspan="6" class="empty-hint">Kayıt bulunamadı.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- VIEW: AGENDA -->
+      <div id="view-agenda" class="view">
+        <div class="ag-page-header">
+          <div>
+            <h2
+              style="font-size: 26px; font-weight: 800; background: linear-gradient(135deg, var(--gold), var(--gold-dark)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+              📅 Günlük Ajanda</h2>
+            <p class="view-sub">Çalışma planını oluştur, tamamla ve takip et</p>
+          </div>
+          <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
+            <div class="ag-date-nav">
+              <button onclick="changeAgendaDate(-1)" title="Önceki gün">‹</button>
+              <span id="ag-date-label">Bugün</span>
+              <button onclick="changeAgendaDate(1)" title="Sonraki gün">›</button>
+              <button onclick="goToToday()" title="Bugüne git"
+                style="font-size:13px;padding:4px 10px;background:var(--gold-10);color:var(--gold);border-radius:6px;margin-left:8px;border:none;cursor:pointer;">Bugün</button>
+            </div>
+            <div id="exam-countdown-badge-agenda" class="hidden" style="font-size:12px; color:var(--gold-dark); display:flex; align-items:center; gap:6px; background:var(--gold-10); padding:6px 12px; border-radius:20px; border:1px solid var(--gold); box-shadow:0 2px 4px rgba(0,0,0,0.02); font-weight:600;">
+              <span>⏳</span>
+              <span id="exam-countdown-text-agenda"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Summary Row -->
+        <div class="ag-summary-row">
+          <div class="ag-summary-card">
+            <span class="ag-sc-label">Toplam Görev</span>
+            <span class="ag-sc-val" id="ag-stat-total">0</span>
+            <span class="ag-sc-sub">ders planı</span>
+          </div>
+          <div class="ag-summary-card">
+            <span class="ag-sc-label">Tamamlanan</span>
+            <span class="ag-sc-val green" id="ag-stat-done">0</span>
+            <span class="ag-sc-sub">görev ✓</span>
+          </div>
+          <div class="ag-summary-card">
+            <span class="ag-sc-label">Bekleyen</span>
+            <span class="ag-sc-val red" id="ag-stat-pending">0</span>
+            <span class="ag-sc-sub">görev</span>
+          </div>
+          <div class="ag-summary-card">
+            <span class="ag-sc-label">Toplam Süre</span>
+            <span class="ag-sc-val gold" id="ag-stat-min">0 dk</span>
+            <span class="ag-sc-sub">planlandı</span>
+          </div>
+          <div class="ag-summary-card">
+            <span class="ag-sc-label">Tamamlanma</span>
+            <span class="ag-sc-val" id="ag-stat-pct">0%</span>
+            <div class="ag-progress-bar-wrap">
+              <div class="ag-progress-bar-fill" id="ag-progress-fill" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Two Columns -->
+        <div class="ag-columns">
+          <!-- Left: Task List -->
+          <div>
+            <div class="ag-section-header">
+              <div class="ag-section-title">📋 Görev Listesi</div>
+            </div>
+
+            <!-- Empty State -->
+            <div id="ag-empty-state" class="ag-empty">
+              <div class="ag-empty-icon">📭</div>
+              <p>Bu gün için henüz görev eklenmedi.<br>Sağ panelden ders ekle!</p>
+            </div>
+
+            <!-- Normal Tasks -->
+            <div class="ag-task-list" id="ag-task-list"></div>
+
+            <!-- Carried Tasks -->
+            <div id="ag-carried-section" class="ag-carried-section hidden">
+              <div class="ag-carried-label">⬅ Önceki günden aktarılanlar</div>
+              <div class="ag-task-list" id="ag-carried-list"></div>
+            </div>
+          </div>
+
+          <!-- Right: Add Task -->
+          <div>
+            <div class="ag-add-panel">
+              <h3 style="font-size:16px;font-weight:700;margin-bottom:18px;">➕ Görev Ekle</h3>
+
+              <div class="ag-field">
+                <label>Sınav Türü</label>
+                <select class="ag-select" id="ag-sel-exam">
+                  <option value="">-- Sınav Türü --</option>
+                </select>
+              </div>
+
+              <div class="ag-field">
+                <label>Ders</label>
+                <select class="ag-select" id="ag-sel-subject">
+                  <option value="">-- Önce sınav türü seç --</option>
+                </select>
+              </div>
+
+              <div class="ag-field">
+                <label>Çalışma Süresi (dakika)</label>
+                <input type="number" class="ag-input" id="ag-inp-duration" min="5" max="480" value="30"
+                  placeholder="Örn: 60" />
+                <div class="ag-duration-presets">
+                  <button class="ag-preset-btn" onclick="setDurationPreset(15)">15 dk</button>
+                  <button class="ag-preset-btn" onclick="setDurationPreset(30)">30 dk</button>
+                  <button class="ag-preset-btn" onclick="setDurationPreset(45)">45 dk</button>
+                  <button class="ag-preset-btn" onclick="setDurationPreset(60)">60 dk</button>
+                </div>
+              </div>
+
+              <button class="ag-add-btn" onclick="addAgendaTask()">➕ Görevi Ekle</button>
+
+              <div class="ag-carry-note">
+                ⚡ Gün bitmeden tamamlanmayan görevler, yarının planına otomatik olarak aktarılır.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW: NOTES (GÜNLÜK NOTLAR) -->
+      <div id="view-notes" class="view">
+        <div class="view-header" style="margin-bottom:24px;">
+          <div>
+            <h2 style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:24px;">📝</span> Günlük Notlar
+            </h2>
+            <p class="view-sub">Serbest notlarınızı ve yapılacaklar listenizi (checklist) yönetin</p>
+          </div>
+          <button class="btn-primary" onclick="openAddNoteModal()" style="display:flex; align-items:center; gap:6px;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Yeni Not
+          </button>
+        </div>
+
+        <div class="notes-grid" id="notes-grid">
+          <!-- JS tarafından doldurulur -->
+          <div class="note-card note-add-placeholder" onclick="openAddNoteModal()">
+            <div class="note-placeholder-inner">
+              <span style="font-size:32px;">📌</span>
+              <p>Yeni not ekle</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- VIEW: SETTINGS -->
+      <div id="view-settings" class="view">
+        <div class="view-header">
+          <div>
+            <h2>⚙️ Ayarlar</h2>
+            <p class="view-sub">Hesap ve uygulama tercihleriniz</p>
+          </div>
+        </div>
+
+        <div class="settings-sections">
+
+          <!-- 1. Hesap Bilgileri -->
+          <div class="settings-section">
+            <h3>👤 Hesap Bilgileri</h3>
+            <div class="settings-items">
+              <div class="settings-item">
+                <label>Ad Soyad</label>
+                <span id="settings-name">—</span>
+              </div>
+              <div class="settings-item">
+                <label>E-posta</label>
+                <span id="settings-email">—</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. Abonelik Planı -->
+          <div class="settings-section">
+            <h3>⭐ Abonelik Planı</h3>
+            <div class="plan-card-container" id="plan-card">
+              <!-- Filled by JS -->
+            </div>
+          </div>
+
+          <!-- 3. Sınav Türleri -->
+          <div class="settings-section">
+            <h3>📚 Sınav Türleri</h3>
+            <p class="settings-desc">Çalıştığın sınav türlerini yönet.</p>
+            <button class="btn-outline" onclick="showScreen('exam-select'); buildExamGrid();">
+              Sınav Türlerini Düzenle
+            </button>
+          </div>
+
+          <!-- 5. Veri -->
+          <div class="settings-section">
+            <h3>📊 Veri Yönetimi</h3>
+            <div class="settings-btns">
+              <button class="btn-outline pro-feature" onclick="exportCSV()" id="btn-export">
+                📥 CSV Olarak İndir
+                <span class="pro-badge">PRO</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 6. Destek -->
+          <div class="settings-section">
+            <h3>💬 Destek & İletişim</h3>
+            <div class="support-form">
+              <textarea id="support-msg" placeholder="Sorunuzu veya önerinizi yazın..." rows="4"></textarea>
+              <button class="btn-primary" onclick="sendSupportMsg()">Gönder</button>
+            </div>
+            
+            <div style="margin-top:24px;">
+              <h4 style="font-size:16px; margin-bottom:12px;">Geçmiş Talepleriniz</h4>
+              <div id="my-tickets-list" style="display:flex; flex-direction:column; gap:12px;">
+                <!-- Filled by JS -->
+                <p style="color:var(--text-3); font-size:14px;">Henüz geçmiş talebiniz yok.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- 7. Hesap İşlemleri -->
+          <div class="settings-section">
+            <h3>🔐 Hesap İşlemleri</h3>
+            <div class="settings-btns">
+              <button class="btn-outline" onclick="sendPasswordReset()">🔑 Şifre Sıfırlama Maili Gönder</button>
+              <button class="btn-danger-sm" onclick="handleLogout()">Çıkış Yap</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ===== TOAST ===== -->
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- ===== SESSION COMPLETE MODAL ===== -->
+  <div id="modal-complete" class="modal-overlay hidden">
+    <div class="modal-box">
+      <div class="modal-icon">🎉</div>
+      <h3>Seans Tamamlandı!</h3>
+      <p id="modal-msg">Harika iş çıkardın. Mola zamanı!</p>
+      <div class="modal-break-input">
+        <label for="inp-modal-break">Mola Süresi (dk)</label>
+        <div class="modal-break-row">
+          <button class="break-quick-btn" onclick="setModalBreak(3)">3</button>
+          <button class="break-quick-btn" onclick="setModalBreak(5)">5</button>
+          <button class="break-quick-btn active" onclick="setModalBreak(10)">10</button>
+          <button class="break-quick-btn" onclick="setModalBreak(15)">15</button>
+          <button class="break-quick-btn" onclick="setModalBreak(20)">20</button>
+          <input type="number" id="inp-modal-break" min="1" max="60" value="10" />
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-primary" onclick="startBreak()">Molaya Geç</button>
+        <button class="btn-outline" onclick="skipBreakModal()">Molayı Atla</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== UPGRADE MODAL ===== -->
+  <div id="modal-upgrade" class="modal-overlay hidden">
+    <div class="modal-box upgrade-modal-box">
+      <button class="modal-close-btn" onclick="hideUpgradeModal()">✕</button>
+      <div class="upgrade-emoji">🚀</div>
+      <h3>StudyPom Pro'ya Geç</h3>
+      <p id="upgrade-reason-text">Bu özelliği kullanmak için Pro plana geçmeniz gerekiyor.</p>
+      <div class="upgrade-features-list">
+        <div class="ufl-item">✅ Sınırsız sınav türü seçimi</div>
+        <div class="ufl-item">✅ Sınırsız geçmiş (tüm haftalar)</div>
+        <div class="ufl-item">✅ Detaylı analizler</div>
+        <div class="ufl-item">✅ CSV veri dışa aktarma</div>
+        <div class="ufl-item">✅ Öncelikli destek</div>
+      </div>
+      <div class="upgrade-price-row">
+        <span class="upgrade-price-amount">₺39</span>
+        <span class="upgrade-price-period">/ay</span>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-gold btn-full" onclick="initiatePayment()">💳 Kredi Kartı ile Öde</button>
+        <button class="btn-outline" onclick="hideUpgradeModal()">Şimdi Değil</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== PAYMENT MODAL ===== -->
+  <div id="modal-payment" class="modal-overlay hidden">
+    <div class="modal-box payment-modal-box">
+      <div class="payment-modal-header">
+        <h3>💳 Güvenli Ödeme</h3>
+        <button class="modal-close-btn" onclick="hidePaymentModal()">✕</button>
+      </div>
+      <div id="iyzico-checkout-form">
+        <div class="payment-loading">
+          <div class="payment-spinner"></div>
+          <p>Ödeme formu yükleniyor...</p>
+        </div>
+      </div>
+      <p class="payment-secure-text">🔒 256-bit SSL ile şifrelenmiş güvenli ödeme (Iyzico)</p>
+    </div>
+  </div>
+
+  <!-- ===== FULLSCREEN TIMER OVERLAY ===== -->
+  <div id="fullscreen-timer" class="fs-overlay">
+    <div class="fs-header">
+      <button class="fs-exit-btn" onclick="exitFullscreenTimer()" title="Çık (ESC)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+    <div class="fs-content">
+      <div class="fs-subject" id="fs-subject-label">Ders seçilmedi</div>
+      <div class="fs-mode" id="fs-mode-label">📖 Konu Çalışma</div>
+      <div class="fs-ring">
+        <svg viewBox="0 0 320 320" id="fs-timer-svg">
+          <defs>
+            <linearGradient id="fsRingGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#C9A84C" />
+              <stop offset="100%" stop-color="#9A7D3A" />
+            </linearGradient>
+          </defs>
+          <circle cx="160" cy="160" r="140" class="fs-ring-bg" />
+          <circle cx="160" cy="160" r="140" class="fs-ring-progress" id="fs-ring-progress" stroke-dasharray="879.65"
+            stroke-dashoffset="0" transform="rotate(-90 160 160)" />
+        </svg>
+        <div class="fs-clock-inner">
+          <div class="fs-clock-time" id="fs-clock-display">25:00</div>
+        </div>
+      </div>
+      <div class="fs-controls">
+        <button class="fs-ctrl-btn" onclick="resetFullscreenTimer()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="1 4 1 10 7 10" />
+            <path d="M3.51 15a9 9 0 1 0 .49-5" />
+          </svg>
+        </button>
+        <button class="fs-ctrl-btn fs-play" onclick="toggleFullscreenTimer()">
+          <svg id="fs-play-icon" viewBox="0 0 24 24" fill="currentColor" class="hidden">
+            <polygon points="5 3 19 12 5 21 5 3" />
+          </svg>
+          <svg id="fs-pause-icon" viewBox="0 0 24 24" fill="currentColor">
+            <rect x="6" y="4" width="4" height="16" />
+            <rect x="14" y="4" width="4" height="16" />
+          </svg>
+        </button>
+        <button class="fs-ctrl-btn" onclick="exitFullscreenTimer()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+            <line x1="9" y1="3" x2="9" y2="21" />
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="fs-footer">
+      <span class="fs-hint">ESC tuşuyla çıkabilirsiniz</span>
+    </div>
+  </div>
+
+  <!-- ===== NOTE MODAL ===== -->
+  <div id="modal-note" class="modal-overlay hidden">
+    <div class="modal-box note-modal-box">
+      <div class="note-modal-tape"></div>
+      <div class="note-modal-header">
+        <h3 id="note-modal-title">✏️ Yeni Not</h3>
+        <button class="modal-close-btn" onclick="closeNoteModal()">✕</button>
+      </div>
+      <div class="note-modal-body">
+        <div class="note-modal-field">
+          <label>Başlık</label>
+          <input type="text" id="note-inp-title" placeholder="Not başlığı..." maxlength="60" />
+        </div>
+        
+        <div class="note-modal-field">
+          <label>Yapılacaklar / Maddeler</label>
+          <div class="note-checklist-container" id="note-checklist-container">
+            <!-- Checklist maddeleri buraya eklenecek -->
+          </div>
+          <div class="note-checklist-add">
+            <input type="text" id="note-add-item-input" placeholder="+ Yeni madde yazıp Enter'a basın..." />
+            <button class="btn-outline" style="padding:4px 8px; font-size:12px;" onclick="addNoteChecklistItemBtn()">Ekle</button>
+          </div>
+        </div>
+
+        <div class="note-modal-field" style="margin-top:16px;">
+          <label>Renk</label>
+          <div class="note-color-picker" id="note-color-picker">
+            <button class="ncp-btn active" data-color="#FFF9C4" style="background:#FFF9C4" title="Sarı"></button>
+            <button class="ncp-btn" data-color="#F8BBD9" style="background:#F8BBD9" title="Pembe"></button>
+            <button class="ncp-btn" data-color="#C8E6C9" style="background:#C8E6C9" title="Yeşil"></button>
+            <button class="ncp-btn" data-color="#BBDEFB" style="background:#BBDEFB" title="Mavi"></button>
+            <button class="ncp-btn" data-color="#FFE0B2" style="background:#FFE0B2" title="Turuncu"></button>
+            <button class="ncp-btn" data-color="#E1BEE7" style="background:#E1BEE7" title="Mor"></button>
+            <button class="ncp-btn" data-color="#B2EBF2" style="background:#B2EBF2" title="Turkuaz"></button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn-primary" onclick="saveNote()">💾 Kaydet</button>
+        <button class="btn-outline" onclick="closeNoteModal()">İptal</button>
+      </div>
+      <input type="hidden" id="note-editing-id" value="" />
+    </div>
+  </div>
+
+  <!-- Firebase SDK v9 Compat (CDN) -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-functions-compat.js"></script>
+
+  <!-- StudyPom -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/firebase.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/agenda-firebase.js"></script>
+  <script src="js/agenda.js"></script>
+  <script src="js/ai-chat.js"></script>
+  <script src="js/app.js"></script>
+  <!-- AI Asistan -->
+  <button id="ai-fab" class="ai-fab" onclick="toggleAiChat()">
+    <span class="ai-fab-icon">✨</span>
+  </button>
+
+  <div id="ai-chat-panel" class="ai-chat-panel hidden">
+    <div class="ai-chat-header">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span style="font-size:18px;">✨</span>
+        <h3 style="font-size:16px; margin:0;">Gemini Asistan</h3>
+      </div>
+      <button onclick="toggleAiChat()" style="background:none; border:none; cursor:pointer; font-size:18px; color:rgba(255,255,255,0.8);">&times;</button>
+    </div>
+    
+    <!-- API Key Setup (visible if no key) -->
+    <div id="ai-key-setup" class="ai-key-setup hidden">
+      <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">Gemini Flash kullanabilmek için ücretsiz API Anahtarınızı girin. (Sadece tarayıcınızda saklanır).</p>
+      <input type="password" id="ai-api-key-input" placeholder="AIzaSy..." style="width:100%; padding:8px; border:1px solid var(--border); border-radius:6px; margin-bottom:8px; font-size:13px;">
+      <button onclick="saveAiKey()" class="btn-primary" style="width:100%; padding:8px; font-size:13px;">Kaydet</button>
+      <a href="https://aistudio.google.com/app/apikey" target="_blank" style="font-size:12px; color:var(--gold); display:block; margin-top:8px; text-align:center;">API Anahtarı Al</a>
+    </div>
+
+    <div id="ai-chat-messages" class="ai-chat-messages">
+      <div class="ai-msg ai">Merhaba! Ben ders çalışma asistanın. Aklına takılanları sorabilirsin.</div>
+    </div>
+
+    <div class="ai-chat-input-area" id="ai-chat-input-area">
+      <input type="text" id="ai-chat-input" placeholder="Bir soru sor..." onkeydown="if(event.key==='Enter') sendAiMessage()">
+      <button onclick="sendAiMessage()" id="ai-send-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:18px;height:18px;"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+      </button>
+    </div>
+  </div>
+
+</body>
+</html>
